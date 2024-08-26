@@ -38,11 +38,16 @@ def upload_file():
             filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             file.save(filepath)
             text = ocr_image(filepath)
-            output_path = os.path.join(app.config['UPLOAD_FOLDER'], filename.rsplit('.', 1)[0] + '.txt')
+            output_filename = filename.rsplit('.', 1)[0] + '.txt'
+            output_path = os.path.join(app.config['UPLOAD_FOLDER'], output_filename)
             with open(output_path, 'w') as f:
                 f.write(text)
-            return send_from_directory(app.config['UPLOAD_FOLDER'], filename.rsplit('.', 1)[0] + '.txt')
+            return render_template('index.html', download_link=output_filename)
     return render_template('index.html')
+
+@app.route('/uploads/<filename>')
+def download_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 if __name__ == '__main__':
     if not os.path.exists('uploads'):
